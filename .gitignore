@@ -1,0 +1,38 @@
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Database backups
+*.dump
+*.sql
+*.zip
+
+# Python generated files
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+
+# Java build files
+**/target/
+
+# Frontend build files
+**/node_modules/
+**/dist/
+
+
+# Python virtual environments
+venv/
+**/venv/
+
+
+# Local editor settings
+.vscode/
+
+# Local diagnostic logs
+startup-error.txt
+*.log
+

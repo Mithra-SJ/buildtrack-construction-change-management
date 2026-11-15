@@ -1,0 +1,46 @@
+
+services:
+  backend:
+    build:
+      context: ./construction-change-management-backend
+      dockerfile: Dockerfile
+    container_name: construction-backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://construction-postgres:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      BUILDTRACK_IMPACT_ENGINE_URL: http://impact-engine:8001
+      JAVA_TOOL_OPTIONS: -Duser.timezone=Asia/Kolkata
+    depends_on:
+      - impact-engine
+    networks:
+      - construction-network
+
+  impact-engine:
+    build:
+      context: ./buildtrack-impact-engine
+      dockerfile: Dockerfile
+    container_name: construction-impact-engine
+    expose:
+      - "8001"
+    networks:
+      - construction-network
+
+  frontend:
+    build:
+      context: ./construction-change-management-frontend
+      dockerfile: Dockerfile
+    container_name: construction-frontend
+    ports:
+      - "5173:8080"
+    depends_on:
+      - backend
+    networks:
+      - construction-network
+
+networks:
+  construction-network:
+    external: true
+    name: construction-network
