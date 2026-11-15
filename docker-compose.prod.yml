@@ -1,0 +1,59 @@
+﻿services:
+  db:
+    image: postgres:16
+    container_name: buildtrack-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      TZ: Asia/Kolkata
+    volumes:
+      - buildtrack_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  impact-engine:
+    build:
+      context: ./buildtrack-impact-engine
+      dockerfile: Dockerfile
+    container_name: buildtrack-impact-engine
+    restart: unless-stopped
+    expose:
+      - "8001"
+
+  backend:
+    build:
+      context: ./construction-change-management-backend
+      dockerfile: Dockerfile
+    container_name: buildtrack-backend
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}?options=-c%20TimeZone%3DAsia%2FKolkata
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      BUILDTRACK_IMPACT_ENGINE_URL: http://impact-engine:8001
+      JAVA_TOOL_OPTIONS: -Duser.timezone=Asia/Kolkata
+      SPRING_JPA_SHOW_SQL: "false"
+    depends_on:
+      db:
+        condition: service_healthy
+      impact-engine:
+        condition: service_started
+
+  frontend:
+    build:
+      context: ./construction-change-management-frontend
+      dockerfile: Dockerfile
+    container_name: buildtrack-frontend
+    restart: unless-stopped
+    ports:
+      - "80:8080"
+    depends_on:
+      - backend
+
+volumes:
+  buildtrack_pgdata:
