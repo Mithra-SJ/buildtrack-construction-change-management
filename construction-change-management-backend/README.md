@@ -63,3 +63,7 @@ POST `http://localhost:8080/api/change-requests`
 ## Important scope notes
 
 This is a functional learning MVP for project CRUD, baseline snapshots, change request creation and one-step decisions. It is not production-ready: authentication/authorization, multi-stage approval, immutable audit history, estimate versioning, full CPM scheduling, forecast reconciliation, pagination and comprehensive automated tests are not included. Approval currently accepts DRAFT or SUBMITTED requests directly; add an explicit submit endpoint and stricter workflow rules before relying on it. `ddl-auto=update` is for local development; use migrations such as Flyway for controlled deployments.
+
+## Minore changes for Commit
+
+Change 1
